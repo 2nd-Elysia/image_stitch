@@ -22,7 +22,7 @@ B_name = os.path.splitext(os.path.basename(path_b))[0]
 
 # stitch the images together to create a panorama
 stitcher = Stitcher()
-(result, vis) = stitcher.stitch([imageA, imageB], showMatches=True)
+(result) = stitcher.stitch([imageA, imageB], showMatches=False)
 # show the images
 # cv2.imshow("Image A", imageA)
 # pillow_image = Image.fromarray(cv2.cvtColor(imageA, cv2.COLOR_BGR2RGB))
@@ -40,3 +40,7 @@ pillow_image.save(f"images/{A_name}_{B_name}.png")
 # cv2.waitKey(0)
 # USAGE
 # python stitch.py -f image_test/a.png -s image_test/b.png 
+# python stitch.py -f images/631.png -s images/2.png 
+# python stitch.py -f images/878.png -s images/631_2.png
+# python stitch.py -f images/1123.png -s images/878_631_2.png
+# python stitch.py -f images/1330.png -s images/1123_878_631_2.png
