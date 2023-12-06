@@ -2,7 +2,12 @@ import numpy as np
 import cv2
 
 def crop_black_borders(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if len(image.shape) == 3 and image.shape[2] == 3:  # 彩色图像
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    elif len(image.shape) == 2:  # 灰度图像
+        gray = image
+    else:
+        raise ValueError("Unsupported image format")
     _, thresh = cv2.threshold(gray, 1, 255, cv2.THRESH_BINARY)
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if contours:
@@ -12,23 +17,23 @@ def crop_black_borders(image):
 
 class Stitcher:
 	def stitch(self, images, showMatches=False):
-		imageA, imageB = images
+		imageB, imageA = images
 		keypoints1, featuresA = self.extract_features(imageA)
 		keypoints2, featuresB = self.extract_features(imageB)
 		good_matches = self.match_features_bf(featuresA, featuresB)
+
 		if not good_matches:
-			print("No good matches found.")
-			return None, None
+			raise ValueError("No good matches found.")
 		# match features between the two images
 		M = self.estimate_transform(keypoints1, keypoints2, good_matches)
 		if M is None:
-			return None
+			return None, None
 		# 图像拼接
 		result = cv2.warpPerspective(imageA, M, (imageA.shape[1] + imageB.shape[1], imageA.shape[0]+imageB.shape[0]))
 		result[0:imageB.shape[0], 0:imageB.shape[1]] = imageB
 		result = crop_black_borders(result)
 		if showMatches:
-			img6 = cv2.drawMatchesKnn(imageA,keypoints1,imageB,keypoints2,good_matches,None,flags = cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS | cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
+			img6 = cv2.drawMatchesKnn(imageB,keypoints2,imageA,keypoints1,[good_matches],None,flags = cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS | cv2.DRAW_MATCHES_FLAGS_NOT_DRAW_SINGLE_POINTS)
 		else :
 			img6 = None
 		return result ,img6

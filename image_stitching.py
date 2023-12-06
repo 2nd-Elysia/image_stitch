@@ -50,10 +50,10 @@ for image in images:
     descriptors.append(desc)
 
 # Match features between the images (you can use a custom matching function)
-matches = match_features(keypoints, descriptors)  # Implement your matching function
+# matches = match_features(keypoints, descriptors)  # Implement your matching function
 
 # Compute the homography and stitch the images
-status,result = stitch_images(images, matches)  # Implement your stitching function
+# status,result = stitch_images(images, matches)  # Implement your stitching function
 stitched = result
 
 # Check the status to determine if stitching was successful
